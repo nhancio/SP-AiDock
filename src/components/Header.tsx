@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Menu, X, User, LogOut } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import toast from 'react-hot-toast'
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -11,6 +12,13 @@ const Header: React.FC = () => {
   const handleSignOut = async () => {
     await signOut()
     navigate('/')
+  }
+
+  const handleCommunityClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    toast.success('Community features coming soon! 🚀', {
+      duration: 3000,
+    })
   }
 
   return (
@@ -39,12 +47,12 @@ const Header: React.FC = () => {
             >
               Browse Tools
             </Link>
-            <Link 
-              to="/community" 
+            <button 
+              onClick={handleCommunityClick}
               className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
             >
               Community
-            </Link>
+            </button>
             <Link 
               to="/submit" 
               className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
@@ -131,13 +139,15 @@ const Header: React.FC = () => {
               >
                 Browse Tools
               </Link>
-              <Link 
-                to="/community" 
-                className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                onClick={() => setIsMenuOpen(false)}
+              <button 
+                onClick={(e) => {
+                  handleCommunityClick(e)
+                  setIsMenuOpen(false)
+                }}
+                className="text-left text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
               >
                 Community
-              </Link>
+              </button>
               <Link 
                 to="/submit" 
                 className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"

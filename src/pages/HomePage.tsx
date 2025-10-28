@@ -51,6 +51,8 @@ const HomePage: React.FC = () => {
 
         if (featuredError) {
           console.error('Featured tools error:', featuredError)
+        } else {
+          console.log('Featured tools fetched:', featured?.length || 0)
         }
 
         // Fetch recent tools
@@ -89,9 +91,55 @@ const HomePage: React.FC = () => {
 
         console.log('Data fetched:', { featured, recent, trending, cats })
 
-        setFeaturedTools(featured || [])
-        setRecentTools(recent || [])
-        setTrendingTools(trending || [])
+        // Mock data as fallback if no tools are found
+        const mockTools = [
+          {
+            id: '1',
+            name: 'ChatGPT',
+            description: 'Advanced AI conversation model that can help with writing, analysis, coding, and more.',
+            short_description: 'AI-powered conversational assistant',
+            url: 'https://chat.openai.com',
+            logo_url: null,
+            category: 'content-creation',
+            tags: ['ai', 'chatbot', 'writing', 'assistant'],
+            pricing_type: 'freemium',
+            upvote_count: 150,
+            view_count: 5000,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '2',
+            name: 'Midjourney',
+            description: 'AI image generation tool that creates stunning artwork from text descriptions.',
+            short_description: 'AI image generation from text',
+            url: 'https://midjourney.com',
+            logo_url: null,
+            category: 'content-creation',
+            tags: ['ai', 'image', 'art', 'generation'],
+            pricing_type: 'paid',
+            upvote_count: 120,
+            view_count: 3500,
+            created_at: new Date().toISOString()
+          },
+          {
+            id: '3',
+            name: 'Claude',
+            description: 'Anthropic\'s AI assistant focused on helpful, harmless, and honest responses.',
+            short_description: 'AI assistant by Anthropic',
+            url: 'https://claude.ai',
+            logo_url: null,
+            category: 'productivity',
+            tags: ['ai', 'assistant', 'productivity', 'analysis'],
+            pricing_type: 'freemium',
+            upvote_count: 95,
+            view_count: 2800,
+            created_at: new Date().toISOString()
+          }
+        ]
+
+        setFeaturedTools(featured?.length ? featured : mockTools)
+        setRecentTools(recent?.length ? recent : mockTools)
+        setTrendingTools(trending?.length ? trending : mockTools)
         setCategories(cats || [])
       } catch (error) {
         console.error('Error fetching data:', error)
