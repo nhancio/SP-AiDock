@@ -1,20 +1,21 @@
 import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key'
+import { envConfig } from '../config/environment'
 
 // Only throw error in production
-if (import.meta.env.PROD && (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY)) {
+if (envConfig.isProduction && (!envConfig.supabaseUrl || !envConfig.supabaseAnonKey)) {
   throw new Error('Missing Supabase environment variables')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(envConfig.supabaseUrl, envConfig.supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true
   }
 })
+
+// Export environment config for use in other components
+export { envConfig }
 
 // Database types
 export interface Database {
@@ -59,7 +60,7 @@ export interface Database {
           logo_url: string | null
           category: string
           tags: string[]
-          pricing_type: 'free' | 'freemium' | 'paid' | 'subscription' | 'one_time'
+          pricing_type: 'free' | 'freemium' | 'paid'
           pricing_details: any
           status: 'pending' | 'approved' | 'rejected'
           submitted_by: string | null
@@ -69,7 +70,7 @@ export interface Database {
           updated_at: string
           view_count: number
           click_count: number
-          upvote_count: number
+          like_count: number
         }
         Insert: {
           id?: string
@@ -80,7 +81,7 @@ export interface Database {
           logo_url?: string | null
           category: string
           tags?: string[]
-          pricing_type: 'free' | 'freemium' | 'paid' | 'subscription' | 'one_time'
+          pricing_type: 'free' | 'freemium' | 'paid'
           pricing_details?: any
           status?: 'pending' | 'approved' | 'rejected'
           submitted_by?: string | null
@@ -90,7 +91,7 @@ export interface Database {
           updated_at?: string
           view_count?: number
           click_count?: number
-          upvote_count?: number
+          like_count?: number
         }
         Update: {
           id?: string
@@ -111,10 +112,10 @@ export interface Database {
           updated_at?: string
           view_count?: number
           click_count?: number
-          upvote_count?: number
+          like_count?: number
         }
       }
-      upvotes: {
+      saved_items: {
         Row: {
           id: string
           user_id: string

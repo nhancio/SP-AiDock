@@ -26,23 +26,23 @@ const SearchEngine: React.FC = () => {
   }
 
   return (
-    <section className="py-20 px-4 bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+    <section className="pt-4 pb-20 px-4 bg-gradient-to-br from-white via-blue-50/20 to-purple-50/20">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm border border-blue-200 rounded-full px-4 py-2 mb-6">
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium text-blue-700">Smart Search</span>
           </div>
-          <h2 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-6">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 bg-clip-text text-transparent mb-4">
             Search AI Tools
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Find the perfect AI tool for your needs with our intelligent search and filtering system
           </p>
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-4xl mx-auto mb-16">
+        <div className="max-w-4xl mx-auto mb-12">
           <form onSubmit={handleSearch} className="relative">
             <div className="relative group">
               {/* Background decoration */}
@@ -71,9 +71,9 @@ const SearchEngine: React.FC = () => {
 
         {/* Category Filters */}
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">Browse by Category</h3>
-            <p className="text-lg text-gray-600">Click on a category to filter your search</p>
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">Browse by Category</h3>
+            <p className="text-base text-gray-600">Click on a category to filter your search</p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">

@@ -14,7 +14,7 @@ interface Tool {
   category: string
   tags: string[]
   pricing_type: string
-  upvote_count: number
+  like_count: number
   view_count: number
   created_at: string
 }
@@ -62,7 +62,7 @@ const CategoryPage: React.FC = () => {
         .select('*')
         .eq('category', slug)
         .eq('status', 'approved')
-        .order('upvote_count', { ascending: false })
+        .order('like_count', { ascending: false })
 
       if (toolsError) {
         console.error('Error fetching tools:', toolsError)

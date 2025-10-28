@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { supabase, envConfig } from '../lib/supabase'
 
 const AuthCallback: React.FC = () => {
   const navigate = useNavigate()
@@ -40,8 +40,10 @@ const AuthCallback: React.FC = () => {
             }
           }
 
+          // Redirect to home page after successful authentication
           navigate('/')
         } else {
+          // Redirect to login page if no session
           navigate('/login')
         }
       } catch (error) {

@@ -14,7 +14,7 @@ interface Tool {
   category: string
   tags: string[]
   pricing_type: string
-  upvote_count: number
+  like_count: number
   view_count: number
   created_at: string
 }
@@ -36,23 +36,6 @@ const ToolsPage: React.FC = () => {
   const fetchTools = async () => {
     setLoading(true)
     try {
-      console.log('🔍 ToolsPage: Starting tools fetch...')
-      console.log('🔍 Search query:', searchQuery)
-      console.log('🔍 Selected category:', selectedCategory)
-      console.log('🔍 Selected pricing:', selectedPricing)
-      console.log('🔍 Sort by:', sortBy)
-      
-      // First, let's check what tools exist in the database
-      const { data: allTools, error: allToolsError } = await supabase
-        .from('tools')
-        .select('*')
-      
-      console.log('📋 ToolsPage: All tools in database:', allTools?.length || 0)
-      console.log('📋 ToolsPage: All tools data:', allTools)
-      if (allToolsError) {
-        console.error('❌ ToolsPage: Error fetching all tools:', allToolsError)
-      }
-      
       let query = supabase
         .from('tools')
         .select('*')
@@ -81,8 +64,8 @@ const ToolsPage: React.FC = () => {
         case 'oldest':
           query = query.order('created_at', { ascending: true })
           break
-        case 'upvotes':
-          query = query.order('upvote_count', { ascending: false })
+        case 'likes':
+          query = query.order('like_count', { ascending: false })
           break
         case 'views':
           query = query.order('view_count', { ascending: false })
@@ -94,19 +77,13 @@ const ToolsPage: React.FC = () => {
           query = query.order('created_at', { ascending: false })
       }
 
-      console.log('🔍 ToolsPage: Executing final query...')
       const { data, error } = await query
 
-      console.log('📊 ToolsPage: Query result:', { data, error })
-      console.log('📊 ToolsPage: Tools count after filters:', data?.length || 0)
-      console.log('📊 ToolsPage: Tools data:', data)
-
       if (error) {
-        console.error('❌ ToolsPage: Error fetching tools:', error)
+        console.error('Error fetching tools:', error)
         return
       }
 
-      console.log('✅ ToolsPage: Tools fetched successfully:', data?.length || 0)
       setTools(data || [])
     } catch (error) {
       console.error('Error fetching tools:', error)
@@ -167,33 +144,21 @@ const ToolsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Debug Info */}
-        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded-lg">
-          <h3 className="font-bold text-yellow-800">🐛 Debug Info:</h3>
-          <p className="text-sm text-yellow-700">
-            Tools loaded: {tools.length} | Loading: {loading ? 'Yes' : 'No'} | 
-            Search: "{searchQuery}" | Category: "{selectedCategory}" | 
-            Pricing: "{selectedPricing}" | Sort: "{sortBy}"
-          </p>
-          <p className="text-xs text-yellow-600 mt-1">
-            Check browser console for detailed API call logs
-          </p>
-        </div>
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
             AI Tools Directory
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
+          <p className="text-base text-gray-600">
             Discover and explore {tools.length} AI tools across all categories
           </p>
         </div>
 
         {/* Search and Filters */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
           <form onSubmit={handleSearch} className="mb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -202,7 +167,7 @@ const ToolsPage: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search AI tools..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
           </form>
@@ -210,7 +175,7 @@ const ToolsPage: React.FC = () => {
           <div className="flex flex-wrap items-center gap-4">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <Filter className="w-4 h-4" />
               <span>Filters</span>
@@ -219,11 +184,11 @@ const ToolsPage: React.FC = () => {
             <select
               value={sortBy}
               onChange={(e) => handleFilterChange('sort', e.target.value)}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
-              <option value="upvotes">Most Upvoted</option>
+              <option value="likes">Most Saved</option>
               <option value="views">Most Viewed</option>
               <option value="name">Name A-Z</option>
             </select>
@@ -231,7 +196,7 @@ const ToolsPage: React.FC = () => {
             {(searchQuery || selectedCategory || selectedPricing) && (
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
               >
                 Clear Filters
               </button>
@@ -240,15 +205,15 @@ const ToolsPage: React.FC = () => {
 
           {/* Advanced Filters */}
           {showFilters && (
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="mt-6 pt-6 border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Category
                 </label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="">All Categories</option>
                   <option value="content-creation">Content Creation</option>
@@ -263,20 +228,18 @@ const ToolsPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Pricing
                 </label>
                 <select
                   value={selectedPricing}
                   onChange={(e) => handleFilterChange('pricing', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 >
                   <option value="">All Pricing</option>
                   <option value="free">Free</option>
                   <option value="freemium">Freemium</option>
                   <option value="paid">Paid</option>
-                  <option value="subscription">Subscription</option>
-                  <option value="one_time">One-time</option>
                 </select>
               </div>
             </div>
@@ -285,7 +248,7 @@ const ToolsPage: React.FC = () => {
 
         {/* Results */}
         <div className="mb-6">
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-gray-600">
             {tools.length} tool{tools.length !== 1 ? 's' : ''} found
           </p>
         </div>
@@ -299,13 +262,13 @@ const ToolsPage: React.FC = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-12 h-12 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
               No tools found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-gray-600 mb-4">
               Try adjusting your search or filter criteria
             </p>
             <button

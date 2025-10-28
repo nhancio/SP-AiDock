@@ -15,7 +15,7 @@ interface Tool {
   category: string
   tags: string[]
   pricing_type: string
-  upvote_count: number
+  like_count: number
   view_count: number
   created_at: string
 }
@@ -64,13 +64,13 @@ const HomePage: React.FC = () => {
           console.error('❌ Error fetching all tools:', allToolsError)
         }
         
-        // Fetch featured tools (most upvoted)
+        // Fetch featured tools (most saved)
         console.log('🔍 Fetching featured tools...')
         const { data: featured, error: featuredError } = await supabase
           .from('tools')
           .select('*')
           .eq('status', 'approved')
-          .order('upvote_count', { ascending: false })
+          .order('like_count', { ascending: false })
           .limit(6)
 
         console.log('⭐ Featured tools query result:', { data: featured, error: featuredError })
@@ -148,7 +148,7 @@ const HomePage: React.FC = () => {
             category: 'content-creation',
             tags: ['ai', 'chatbot', 'writing', 'assistant'],
             pricing_type: 'freemium',
-            upvote_count: 150,
+            like_count: 150,
             view_count: 5000,
             created_at: new Date().toISOString()
           },
@@ -162,7 +162,7 @@ const HomePage: React.FC = () => {
             category: 'content-creation',
             tags: ['ai', 'image', 'art', 'generation'],
             pricing_type: 'paid',
-            upvote_count: 120,
+            like_count: 120,
             view_count: 3500,
             created_at: new Date().toISOString()
           },
@@ -176,7 +176,7 @@ const HomePage: React.FC = () => {
             category: 'productivity',
             tags: ['ai', 'assistant', 'productivity', 'analysis'],
             pricing_type: 'freemium',
-            upvote_count: 95,
+            like_count: 95,
             view_count: 2800,
             created_at: new Date().toISOString()
           }
@@ -288,11 +288,11 @@ const HomePage: React.FC = () => {
                 Featured Tools
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-300">
-                Most loved AI tools by our community
+                Most saved AI tools by our community
               </p>
             </div>
             <Link
-              to="/tools?sort=upvotes"
+              to="/tools?sort=likes"
               className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium flex items-center"
             >
               View all

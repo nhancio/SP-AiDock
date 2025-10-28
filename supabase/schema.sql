@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create custom types
 CREATE TYPE user_role AS ENUM ('user', 'tool_owner', 'admin');
-CREATE TYPE pricing_type AS ENUM ('free', 'freemium', 'paid', 'subscription', 'one_time');
+CREATE TYPE pricing_type AS ENUM ('free', 'freemium', 'paid');
 CREATE TYPE tool_status AS ENUM ('pending', 'approved', 'rejected');
 
 -- Users table

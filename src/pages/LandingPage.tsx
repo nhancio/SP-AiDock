@@ -7,22 +7,27 @@ import { ArrowRight, Sparkles, Zap, BarChart, Users, Globe, Shield } from 'lucid
 const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
-      {/* 1st Screen - Hero with Mockup */}
-      <HeroWithMockup
-        title="AI Tools Directory"
-        description="Discover the best AI tools for your needs. Browse, compare, and find the perfect AI solution."
-        primaryCta={{
-          text: "Browse Tools",
-          href: "/tools"
-        }}
-        secondaryCta={{
-          text: "Submit Tool",
-          href: "/submit"
-        }}
-      />
-
-      {/* 2nd Screen - Search Engine */}
-      <SearchEngine />
+      {/* First Page - Hero + Search Combined */}
+      <div className="relative">
+        {/* Hero Section */}
+        <HeroWithMockup
+          title="AI Tools Directory"
+          description="Discover the best AI tools for your needs. Browse, compare, and find the perfect AI solution."
+          primaryCta={{
+            text: "Browse Tools",
+            href: "/tools"
+          }}
+          secondaryCta={{
+            text: "Submit Tool",
+            href: "/submit"
+          }}
+        />
+        
+        {/* Search Section - Minimal gap */}
+        <div className="-mt-24 relative z-10">
+          <SearchEngine />
+        </div>
+      </div>
 
       {/* 3rd Screen - Display Cards */}
       <section className="py-20 px-4 bg-gray-50">
@@ -32,7 +37,7 @@ const LandingPage: React.FC = () => {
               Featured Tools
             </h2>
             <p className="text-xl text-gray-600">
-              Discover the most popular and trending AI tools
+              Worried about finding the right AI tool for your needs? We've got you covered.
             </p>
           </div>
           <DisplayCards />

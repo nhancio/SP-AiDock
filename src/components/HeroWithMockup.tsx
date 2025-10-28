@@ -42,9 +42,9 @@ export function HeroWithMockup({
       )}
     >
       <div className="relative mx-auto max-w-[1280px] flex flex-col gap-12 lg:gap-24">
-        <div className="relative z-10 flex flex-col items-center gap-6 pt-8 md:pt-16 text-center lg:gap-12">
+        <div className="relative z-10 flex flex-col items-center gap-4 pt-2 md:pt-4 text-center lg:gap-8">
           {/* Badge */}
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-full px-4 py-2 mb-4 animate-appear opacity-0 [animation-delay:100ms]">
+          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-full px-4 py-2 mb-2 animate-appear opacity-0 [animation-delay:100ms]">
             <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium text-blue-700">Discover the Future of AI</span>
           </div>

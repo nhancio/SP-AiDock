@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Heart, ExternalLink, Eye } from 'lucide-react'
+import { ExternalLink, Eye, Bookmark } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
@@ -15,48 +15,48 @@ interface Tool {
   category: string
   tags: string[]
   pricing_type: string
-  upvote_count: number
+  like_count: number
   view_count: number
   created_at: string
 }
 
 interface ToolCardProps {
   tool: Tool
-  onUpvote?: () => void
+  onLike?: () => void
 }
 
-const ToolCard: React.FC<ToolCardProps> = ({ tool, onUpvote }) => {
-  const [isUpvoted, setIsUpvoted] = useState(false)
-  const [upvoteCount, setUpvoteCount] = useState(tool.upvote_count)
+const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
+  const [isLiked, setIsLiked] = useState(false)
+  const [likeCount, setLikeCount] = useState(tool.like_count)
   const { user } = useAuth()
 
-  const handleUpvote = async (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
     if (!user) {
-      toast.error('Please sign in to upvote tools')
+      toast.error('Please sign in to save tools')
       return
     }
 
     try {
-      if (isUpvoted) {
-        // Remove upvote
+      if (isLiked) {
+        // Remove like/save
         const { error } = await supabase
-          .from('upvotes')
+          .from('saved_items')
           .delete()
           .eq('user_id', user.id)
           .eq('tool_id', tool.id)
 
         if (error) throw error
 
-        setIsUpvoted(false)
-        setUpvoteCount(prev => prev - 1)
-        toast.success('Upvote removed')
+        setIsLiked(false)
+        setLikeCount(prev => prev - 1)
+        toast.success('Removed from saved items')
       } else {
-        // Add upvote
+        // Add like/save
         const { error } = await supabase
-          .from('upvotes')
+          .from('saved_items')
           .insert({
             user_id: user.id,
             tool_id: tool.id
@@ -64,17 +64,17 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onUpvote }) => {
 
         if (error) throw error
 
-        setIsUpvoted(true)
-        setUpvoteCount(prev => prev + 1)
-        toast.success('Tool upvoted!')
+        setIsLiked(true)
+        setLikeCount(prev => prev + 1)
+        toast.success('Tool saved!')
       }
 
-      if (onUpvote) {
-        onUpvote()
+      if (onLike) {
+        onLike()
       }
     } catch (error) {
-      console.error('Error upvoting:', error)
-      toast.error('Failed to upvote tool')
+      console.error('Error saving tool:', error)
+      toast.error('Failed to save tool')
     }
   }
 
@@ -100,9 +100,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onUpvote }) => {
     const badges = {
       free: { text: 'Free', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' },
       freemium: { text: 'Freemium', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' },
-      paid: { text: 'Paid', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' },
-      subscription: { text: 'Subscription', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' },
-      one_time: { text: 'One-time', color: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200' }
+      paid: { text: 'Paid', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' }
     }
     
     const badge = badges[pricingType as keyof typeof badges] || badges.free
@@ -113,43 +111,57 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onUpvote }) => {
     )
   }
 
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      'content-creation': 'from-pink-500 to-rose-500',
+      'productivity': 'from-blue-500 to-cyan-500',
+      'analytics': 'from-yellow-500 to-orange-500',
+      'automation': 'from-purple-500 to-indigo-500',
+      'saas': 'from-green-500 to-emerald-500',
+      'agents': 'from-red-500 to-pink-500',
+      'marketing': 'from-teal-500 to-blue-500',
+      'development': 'from-gray-500 to-slate-500'
+    }
+    return colors[category as keyof typeof colors] || 'from-gray-500 to-slate-500'
+  }
+
   return (
-    <div className="card p-6 hover:shadow-lg transition-shadow duration-200 group">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center space-x-3">
-          {tool.logo_url ? (
-            <img
-              src={tool.logo_url}
-              alt={tool.name}
-              className="w-12 h-12 rounded-lg object-cover"
-            />
-          ) : (
-            <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
-              <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
-                {tool.name.charAt(0).toUpperCase()}
-              </span>
+    <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group border border-gray-200 dark:border-gray-700">
+      {/* Gradient overlay */}
+      <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${getCategoryColor(tool.category)}`}></div>
+      
+      {/* Clickable card content */}
+      <Link 
+        to={`/tools/${tool.id}`}
+        className="block p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+      >
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            {tool.logo_url ? (
+              <img
+                src={tool.logo_url}
+                alt={tool.name}
+                className="w-12 h-12 rounded-lg object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
+                  {tool.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                {tool.name}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+                {tool.category.replace('-', ' ')}
+              </p>
             </div>
-          )}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-              {tool.name}
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
-              {tool.category.replace('-', ' ')}
-            </p>
           </div>
+          {/* Placeholder for button space */}
+          <div className="w-10 h-10"></div>
         </div>
-        <button
-          onClick={handleUpvote}
-          className={`p-2 rounded-lg transition-colors ${
-            isUpvoted
-              ? 'text-red-500 bg-red-50 dark:bg-red-900/20'
-              : 'text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20'
-          }`}
-        >
-          <Heart className={`w-5 h-5 ${isUpvoted ? 'fill-current' : ''}`} />
-        </button>
-      </div>
 
       <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
         {tool.short_description || tool.description}
@@ -174,8 +186,8 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onUpvote }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
           <div className="flex items-center space-x-1">
-            <Heart className="w-4 h-4" />
-            <span>{upvoteCount}</span>
+            <Bookmark className="w-4 h-4" />
+            <span>{likeCount}</span>
           </div>
           <div className="flex items-center space-x-1">
             <Eye className="w-4 h-4" />
@@ -187,18 +199,25 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onUpvote }) => {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between">
-        <Link
-          to={`/tools/${tool.id}`}
-          className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium text-sm flex items-center"
+      </Link>
+
+      {/* Floating buttons - positioned absolutely to avoid interfering with card click */}
+      <div className="absolute top-4 right-4 flex flex-col space-y-2">
+        <button
+          onClick={handleLike}
+          className={`p-2 rounded-lg transition-all duration-200 ${
+            isLiked
+              ? 'text-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
+              : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'
+          }`}
         >
-          View Details
-        </Link>
+          <Bookmark className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+        </button>
         <button
           onClick={handleExternalClick}
-          className="text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          className="text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
         >
-          <ExternalLink className="w-4 h-4" />
+          <ExternalLink className="w-5 h-5" />
         </button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Mail, Twitter, Github, Heart } from 'lucide-react'
+import { Mail, Twitter, Linkedin, Instagram, Heart } from 'lucide-react'
 
 const Footer: React.FC = () => {
   return (
@@ -28,12 +28,20 @@ const Footer: React.FC = () => {
                 <Twitter className="w-4 h-4" />
               </a>
               <a
-                href="https://github.com"
+                href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                <Github className="w-4 h-4" />
+                <Linkedin className="w-4 h-4" />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <Instagram className="w-4 h-4" />
               </a>
               <a
                 href="mailto:hello@nhancio.com"
@@ -56,11 +64,6 @@ const Footer: React.FC = () => {
               <li>
                 <Link to="/submit" className="text-gray-400 hover:text-white transition-colors text-sm">
                   Submit Tool
-                </Link>
-              </li>
-              <li>
-                <Link to="/community" className="text-gray-400 hover:text-white transition-colors text-sm">
-                  Community
                 </Link>
               </li>
             </ul>
@@ -92,7 +95,7 @@ const Footer: React.FC = () => {
         {/* Bottom */}
         <div className="mt-6 pt-4 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-xs">
-            © 2024 AiDock. All rights reserved.
+            © 2024 Nhancio Technologies Private Limited. All rights reserved.
           </p>
           <p className="text-gray-400 text-xs flex items-center mt-1 md:mt-0">
             Made with <Heart className="w-3 h-3 text-red-500 mx-1" /> for the AI community

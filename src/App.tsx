@@ -12,6 +12,8 @@ import LoginPage from './pages/LoginPage'
 import ProfilePage from './pages/ProfilePage'
 import CategoryPage from './pages/CategoryPage'
 import AuthCallback from './pages/AuthCallback'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsConditions from './pages/TermsConditions'
 import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
@@ -30,6 +32,8 @@ function App() {
                 <Route path="/submit" element={<SubmitToolPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsConditions />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>

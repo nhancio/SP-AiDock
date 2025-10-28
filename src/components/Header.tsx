@@ -1,23 +1,18 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Menu, X, User, LogOut } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Menu, X, User } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { user, signOut, signInWithGoogle } = useAuth()
-  const navigate = useNavigate()
+  const { user, signInWithGoogle } = useAuth()
 
-  const handleSignOut = async () => {
-    await signOut()
-    navigate('/')
-  }
 
   const handleCommunityClick = (e: React.MouseEvent) => {
     e.preventDefault()
-    toast.success('Community features coming soon! 🚀', {
-      duration: 3000,
+    toast.success('Coming soon! 🚀', {
+      duration: 2000,
     })
   }
 
@@ -48,6 +43,12 @@ const Header: React.FC = () => {
               >
                 Browse Tools
               </Link>
+              <Link 
+                to="/tools?sort=likes" 
+                className="px-4 py-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 text-sm"
+              >
+                Trending
+              </Link>
               <button 
                 onClick={handleCommunityClick}
                 className="px-4 py-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 text-sm"
@@ -66,21 +67,20 @@ const Header: React.FC = () => {
             <div className="hidden md:flex items-center space-x-3">
               {/* User Menu */}
               {user ? (
-                <div className="flex items-center space-x-2">
-                  <Link
-                    to="/profile"
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 text-sm"
-                  >
-                    <User className="w-4 h-4" />
-                    <span className="hidden sm:block">{user.email}</span>
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="p-2 text-gray-500 hover:text-gray-700 hover:bg-white/60 rounded-full transition-all duration-200"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
+                <Link
+                  to="/profile"
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  {user.user_metadata?.avatar_url ? (
+                    <img
+                      src={user.user_metadata.avatar_url}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-5 h-5" />
+                  )}
+                </Link>
               ) : (
                 <button
                   onClick={() => signInWithGoogle()}
@@ -138,6 +138,13 @@ const Header: React.FC = () => {
               >
                 Browse Tools
               </Link>
+              <Link 
+                to="/tools?sort=likes" 
+                className="px-4 py-3 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 text-sm"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Trending
+              </Link>
               <button 
                 onClick={(e) => {
                   handleCommunityClick(e)
@@ -158,24 +165,22 @@ const Header: React.FC = () => {
               {/* Mobile User Menu */}
               <div className="pt-4 border-t border-gray-200">
                 {user ? (
-                  <div className="flex flex-col space-y-2">
-                    <Link
-                      to="/profile"
-                      className="px-4 py-3 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 text-sm"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Profile
-                    </Link>
-                    <button
-                      onClick={() => {
-                        handleSignOut()
-                        setIsMenuOpen(false)
-                      }}
-                      className="text-left px-4 py-3 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 text-sm"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
+                  <Link
+                    to="/profile"
+                    className="flex items-center space-x-3 px-4 py-3 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 text-sm"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {user.user_metadata?.avatar_url ? (
+                      <img
+                        src={user.user_metadata.avatar_url}
+                        alt="Profile"
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-5 h-5" />
+                    )}
+                    <span>Profile</span>
+                  </Link>
                 ) : (
                   <button
                     onClick={() => {
