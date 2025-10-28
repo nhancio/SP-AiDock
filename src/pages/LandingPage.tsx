@@ -19,12 +19,6 @@ const LandingPage: React.FC = () => {
           text: "Submit Tool",
           href: "/submit"
         }}
-        mockupImage={{
-          src: "/api/placeholder/800/600",
-          alt: "AI Tools Platform Preview",
-          width: 800,
-          height: 600
-        }}
       />
 
       {/* 2nd Screen - Search Engine */}
