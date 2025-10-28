@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Mockup } from "@/components/ui/mockup"
 import { Glow } from "@/components/ui/glow"
 import { Github } from "lucide-react"
 
@@ -15,12 +14,6 @@ interface HeroWithMockupProps {
     text: string
     href: string
     icon?: React.ReactNode
-  }
-  mockupImage: {
-    src: string
-    alt: string
-    width: number
-    height: number
   }
   className?: string
 }
@@ -37,7 +30,6 @@ export function HeroWithMockup({
     href: "https://github.com/your-repo",
     icon: <Github className="mr-2 h-4 w-4" />,
   },
-  mockupImage,
   className,
 }: HeroWithMockupProps) {
   return (
@@ -120,29 +112,6 @@ export function HeroWithMockup({
             </Button>
           </div>
 
-          {/* Mockup */}
-          <div className="relative w-full pt-16 px-4 sm:px-6 lg:px-8">
-            <div className="relative">
-              {/* Background decoration */}
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-3xl blur-3xl"></div>
-              
-              <Mockup
-                className={cn(
-                  "animate-appear opacity-0 [animation-delay:500ms]",
-                  "shadow-2xl hover:shadow-3xl",
-                  "border-0 bg-white/80 backdrop-blur-sm",
-                  "transform hover:scale-[1.02] transition-all duration-500",
-                )}
-              >
-                <img
-                  {...mockupImage}
-                  className="w-full h-auto rounded-lg"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </Mockup>
-            </div>
-          </div>
         </div>
       </div>
 
