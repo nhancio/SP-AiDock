@@ -39,9 +39,33 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('Fetching data from Supabase...')
+        console.log('🚀 Starting data fetch from Supabase...')
+        console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL)
+        console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY)
+        
+        // Test basic connection
+        const { data: testData, error: testError } = await supabase
+          .from('tools')
+          .select('count', { count: 'exact', head: true })
+        
+        console.log('📊 Total tools in database:', testData?.length || 0)
+        if (testError) {
+          console.error('❌ Database connection test failed:', testError)
+        }
+        
+        // Fetch all tools first to see what's available
+        const { data: allTools, error: allToolsError } = await supabase
+          .from('tools')
+          .select('*')
+        
+        console.log('📋 All tools in database:', allTools?.length || 0)
+        console.log('📋 All tools data:', allTools)
+        if (allToolsError) {
+          console.error('❌ Error fetching all tools:', allToolsError)
+        }
         
         // Fetch featured tools (most upvoted)
+        console.log('🔍 Fetching featured tools...')
         const { data: featured, error: featuredError } = await supabase
           .from('tools')
           .select('*')
@@ -49,13 +73,17 @@ const HomePage: React.FC = () => {
           .order('upvote_count', { ascending: false })
           .limit(6)
 
+        console.log('⭐ Featured tools query result:', { data: featured, error: featuredError })
+        console.log('⭐ Featured tools count:', featured?.length || 0)
+        
         if (featuredError) {
-          console.error('Featured tools error:', featuredError)
+          console.error('❌ Featured tools error:', featuredError)
         } else {
-          console.log('Featured tools fetched:', featured?.length || 0)
+          console.log('✅ Featured tools fetched successfully:', featured?.length || 0)
         }
 
         // Fetch recent tools
+        console.log('🕒 Fetching recent tools...')
         const { data: recent, error: recentError } = await supabase
           .from('tools')
           .select('*')
@@ -63,11 +91,17 @@ const HomePage: React.FC = () => {
           .order('created_at', { ascending: false })
           .limit(6)
 
+        console.log('🕒 Recent tools query result:', { data: recent, error: recentError })
+        console.log('🕒 Recent tools count:', recent?.length || 0)
+        
         if (recentError) {
-          console.error('Recent tools error:', recentError)
+          console.error('❌ Recent tools error:', recentError)
+        } else {
+          console.log('✅ Recent tools fetched successfully:', recent?.length || 0)
         }
 
         // Fetch trending tools (most viewed in last 7 days)
+        console.log('📈 Fetching trending tools...')
         const { data: trending, error: trendingError } = await supabase
           .from('tools')
           .select('*')
@@ -75,18 +109,29 @@ const HomePage: React.FC = () => {
           .order('view_count', { ascending: false })
           .limit(6)
 
+        console.log('📈 Trending tools query result:', { data: trending, error: trendingError })
+        console.log('📈 Trending tools count:', trending?.length || 0)
+        
         if (trendingError) {
-          console.error('Trending tools error:', trendingError)
+          console.error('❌ Trending tools error:', trendingError)
+        } else {
+          console.log('✅ Trending tools fetched successfully:', trending?.length || 0)
         }
 
         // Fetch categories
+        console.log('🏷️ Fetching categories...')
         const { data: cats, error: catsError } = await supabase
           .from('categories')
           .select('*')
           .order('name')
 
+        console.log('🏷️ Categories query result:', { data: cats, error: catsError })
+        console.log('🏷️ Categories count:', cats?.length || 0)
+        
         if (catsError) {
-          console.error('Categories error:', catsError)
+          console.error('❌ Categories error:', catsError)
+        } else {
+          console.log('✅ Categories fetched successfully:', cats?.length || 0)
         }
 
         console.log('Data fetched:', { featured, recent, trending, cats })

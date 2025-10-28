@@ -36,6 +36,23 @@ const ToolsPage: React.FC = () => {
   const fetchTools = async () => {
     setLoading(true)
     try {
+      console.log('🔍 ToolsPage: Starting tools fetch...')
+      console.log('🔍 Search query:', searchQuery)
+      console.log('🔍 Selected category:', selectedCategory)
+      console.log('🔍 Selected pricing:', selectedPricing)
+      console.log('🔍 Sort by:', sortBy)
+      
+      // First, let's check what tools exist in the database
+      const { data: allTools, error: allToolsError } = await supabase
+        .from('tools')
+        .select('*')
+      
+      console.log('📋 ToolsPage: All tools in database:', allTools?.length || 0)
+      console.log('📋 ToolsPage: All tools data:', allTools)
+      if (allToolsError) {
+        console.error('❌ ToolsPage: Error fetching all tools:', allToolsError)
+      }
+      
       let query = supabase
         .from('tools')
         .select('*')
@@ -77,13 +94,19 @@ const ToolsPage: React.FC = () => {
           query = query.order('created_at', { ascending: false })
       }
 
+      console.log('🔍 ToolsPage: Executing final query...')
       const { data, error } = await query
 
+      console.log('📊 ToolsPage: Query result:', { data, error })
+      console.log('📊 ToolsPage: Tools count after filters:', data?.length || 0)
+      console.log('📊 ToolsPage: Tools data:', data)
+
       if (error) {
-        console.error('Error fetching tools:', error)
+        console.error('❌ ToolsPage: Error fetching tools:', error)
         return
       }
 
+      console.log('✅ ToolsPage: Tools fetched successfully:', data?.length || 0)
       setTools(data || [])
     } catch (error) {
       console.error('Error fetching tools:', error)
@@ -146,6 +169,19 @@ const ToolsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Debug Info */}
+        <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded-lg">
+          <h3 className="font-bold text-yellow-800">🐛 Debug Info:</h3>
+          <p className="text-sm text-yellow-700">
+            Tools loaded: {tools.length} | Loading: {loading ? 'Yes' : 'No'} | 
+            Search: "{searchQuery}" | Category: "{selectedCategory}" | 
+            Pricing: "{selectedPricing}" | Sort: "{sortBy}"
+          </p>
+          <p className="text-xs text-yellow-600 mt-1">
+            Check browser console for detailed API call logs
+          </p>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
