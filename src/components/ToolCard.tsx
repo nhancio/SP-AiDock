@@ -133,7 +133,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
       
       {/* Clickable card content */}
       <Link 
-        to={generateToolUrl(tool.id, tool.name)}
+        to={generateToolUrl(tool.name)}
         className="block p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-200"
       >
         <div className="flex items-start justify-between mb-4">

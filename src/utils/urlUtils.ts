@@ -13,7 +13,7 @@ export const generateSlug = (name: string): string => {
 /**
  * Generate a tool URL with SEO-friendly slug
  */
-export const generateToolUrl = (id: string, name: string): string => {
+export const generateToolUrl = (name: string): string => {
   const slug = generateSlug(name)
   return `/tools/${slug}`
 }
