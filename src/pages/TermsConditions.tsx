@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, FileText, Scale, AlertTriangle, Mail, Shield } from 'lucide-react'
+import { ArrowLeft, FileText, Scale, AlertTriangle } from 'lucide-react'
 
 const TermsConditions: React.FC = () => {
   return (
