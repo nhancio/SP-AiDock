@@ -99,9 +99,9 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
 
   const getPricingBadge = (pricingType: string) => {
     const badges = {
-      free: { text: 'Free', color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' },
-      freemium: { text: 'Freemium', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' },
-      paid: { text: 'Paid', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' }
+      free: { text: 'Free', color: 'bg-green-100 text-green-800' },
+      freemium: { text: 'Freemium', color: 'bg-blue-100 text-blue-800' },
+      paid: { text: 'Paid', color: 'bg-yellow-100 text-yellow-800' }
     }
     
     const badge = badges[pricingType as keyof typeof badges] || badges.free
@@ -145,17 +145,17 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
                 className="w-12 h-12 rounded-lg object-cover"
               />
             ) : (
-              <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
-                <span className="text-lg font-bold text-gray-600 dark:text-gray-300">
+              <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                <span className="text-lg font-bold text-gray-600">
                   {tool.name.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+              <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                 {tool.name}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+              <p className="text-sm text-gray-500 capitalize">
                 {tool.category.replace('-', ' ')}
               </p>
             </div>
@@ -164,7 +164,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
           <div className="w-10 h-10"></div>
         </div>
 
-      <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
+      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
         {tool.short_description || tool.description}
       </p>
 
@@ -172,20 +172,20 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
         {tool.tags.slice(0, 3).map((tag) => (
           <span
             key={tag}
-            className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md"
+            className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md"
           >
             {tag}
           </span>
         ))}
         {tool.tags.length > 3 && (
-          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md">
+          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
             +{tool.tags.length - 3} more
           </span>
         )}
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex items-center space-x-4 text-sm text-gray-500">
           <div className="flex items-center space-x-1">
             <Bookmark className="w-4 h-4" />
             <span>{likeCount}</span>
@@ -208,15 +208,15 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
           onClick={handleLike}
           className={`p-2 rounded-lg transition-all duration-200 ${
             isLiked
-              ? 'text-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md'
-              : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'
+              ? 'text-blue-500 bg-blue-50 shadow-md'
+              : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50 hover:shadow-md'
           }`}
         >
           <Bookmark className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
         </button>
         <button
           onClick={handleExternalClick}
-          className="text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="text-gray-500 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
         >
           <ExternalLink className="w-5 h-5" />
         </button>
