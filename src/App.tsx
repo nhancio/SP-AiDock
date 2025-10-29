@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider } from './contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import Layout from './components/Layout'
@@ -18,11 +19,12 @@ import NotFoundPage from './pages/NotFoundPage'
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <Layout>
+    <HelmetProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+              <Layout>
               <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/home" element={<HomePage />} />
@@ -55,6 +57,7 @@ function App() {
         </Router>
       </AuthProvider>
     </ThemeProvider>
+    </HelmetProvider>
   )
 }
 

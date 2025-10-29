@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ExternalLink, Eye, Bookmark } from 'lucide-react'
+import { generateToolUrl } from '../utils/urlUtils'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
@@ -126,14 +127,14 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
   }
 
   return (
-    <div className="relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group border border-gray-200 dark:border-gray-700">
+    <div className="relative overflow-hidden bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group border border-gray-200">
       {/* Gradient overlay */}
       <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${getCategoryColor(tool.category)}`}></div>
       
       {/* Clickable card content */}
       <Link 
-        to={`/tools/${tool.id}`}
-        className="block p-6 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+        to={generateToolUrl(tool.id, tool.name)}
+        className="block p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-200"
       >
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">

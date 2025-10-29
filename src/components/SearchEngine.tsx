@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 
 const SearchEngine: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('')
   const navigate = useNavigate()
 
   const categories = [
@@ -21,8 +20,12 @@ const SearchEngine: React.FC = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/tools?search=${encodeURIComponent(searchQuery)}&category=${selectedCategory}`)
+      navigate(`/tools?search=${encodeURIComponent(searchQuery)}`)
     }
+  }
+
+  const handleCategoryClick = (categoryId: string) => {
+    navigate(`/tools?category=${categoryId}`)
   }
 
   return (
@@ -82,22 +85,13 @@ const SearchEngine: React.FC = () => {
               return (
                 <button
                   key={category.id}
-                  onClick={() => setSelectedCategory(selectedCategory === category.id ? '' : category.id)}
-                  className={`group relative p-6 rounded-2xl transition-all duration-300 transform hover:scale-105 ${
-                    selectedCategory === category.id
-                      ? 'bg-white text-gray-900 scale-105 shadow-2xl border-2 border-blue-500'
-                      : 'bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-xl border-2 border-transparent hover:border-gray-200'
-                  }`}
+                  onClick={() => handleCategoryClick(category.id)}
+                  className="group relative p-6 rounded-2xl transition-all duration-300 transform hover:scale-105 bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-xl border-2 border-transparent hover:border-gray-200"
                 >
                   <div className={`w-14 h-14 ${category.color} rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                     <IconComponent className="w-7 h-7 text-white" />
                   </div>
                   <h4 className="text-sm font-semibold">{category.name}</h4>
-                  {selectedCategory === category.id && (
-                    <div className="absolute -top-2 -right-2 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                      <span className="text-white text-sm font-bold">✓</span>
-                    </div>
-                  )}
                 </button>
               )
             })}

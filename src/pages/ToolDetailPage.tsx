@@ -56,12 +56,23 @@ const ToolDetailPage: React.FC = () => {
 
   const fetchTool = async () => {
     try {
-      const { data, error } = await supabase
+      // Check if id is a UUID (old format) or slug (new format)
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || '')
+      
+      let query = supabase
         .from('tools')
         .select('*')
-        .eq('id', id)
         .eq('status', 'approved')
-        .single()
+      
+      if (isUUID) {
+        query = query.eq('id', id)
+      } else {
+        // Generate slug from tool name and search by it
+        const slug = (id || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+        query = query.ilike('name', `%${slug.replace(/-/g, ' ')}%`)
+      }
+      
+      const { data, error } = await query.single()
 
       if (error) {
         console.error('Error fetching tool:', error)

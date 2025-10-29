@@ -19,8 +19,8 @@ interface CategoryCardProps {
 const CategoryCard: React.FC<CategoryCardProps> = ({ category, icon: IconComponent }) => {
   return (
     <Link
-      to={`/category/${category.slug}`}
-      className="card p-6 hover:shadow-lg transition-all duration-200 group hover:scale-105"
+      to={`/tools?category=${category.slug}`}
+      className="block p-6 bg-white rounded-xl border border-gray-200 hover:shadow-lg transition-all duration-200 group hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 select-none"
     >
       <div className="flex items-center space-x-4 mb-4">
         <div 

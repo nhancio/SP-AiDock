@@ -2,11 +2,19 @@ import React from 'react'
 import { HeroWithMockup } from '../components/HeroWithMockup'
 import SearchEngine from '../components/SearchEngine'
 import DisplayCards from '../components/DisplayCards'
+import SEO from '../components/SEO'
 import { ArrowRight, Sparkles, Zap, BarChart, Users, Globe, Shield } from 'lucide-react'
 
 const LandingPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <>
+      <SEO 
+        title="AiDock - Discover the Best AI Tools for Your Needs"
+        description="Explore thousands of AI tools across all categories. Find the perfect AI solution for writing, coding, design, marketing, and more. Browse, compare, and discover innovative AI tools."
+        keywords="AI tools, artificial intelligence, machine learning, automation, productivity, writing tools, coding tools, design tools, marketing tools"
+        url="https://aidockapp.netlify.app"
+      />
+      <div className="min-h-screen bg-white">
       {/* First Page - Hero + Search Combined */}
       <div className="relative">
         {/* Hero Section */}
@@ -63,10 +71,6 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Curated Collection</h3>
               <p className="text-gray-600 mb-6">Hand-picked AI tools verified by experts to ensure quality and reliability.</p>
-              <div className="flex items-center text-blue-600 font-medium group-hover:text-blue-700">
-                <span>Learn more</span>
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </div>
             </div>
 
             <div className="group p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 transition-all duration-300 hover:scale-105">
@@ -75,10 +79,6 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Smart Search</h3>
               <p className="text-gray-600 mb-6">Find exactly what you need with our intelligent search and filtering system.</p>
-              <div className="flex items-center text-green-600 font-medium group-hover:text-green-700">
-                <span>Learn more</span>
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </div>
             </div>
 
             <div className="group p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-all duration-300 hover:scale-105">
@@ -87,10 +87,6 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Real Reviews</h3>
               <p className="text-gray-600 mb-6">Read authentic reviews from users who have actually used these tools.</p>
-              <div className="flex items-center text-purple-600 font-medium group-hover:text-purple-700">
-                <span>Learn more</span>
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </div>
             </div>
 
             <div className="group p-8 rounded-2xl bg-gradient-to-br from-orange-50 to-red-50 hover:from-orange-100 hover:to-red-100 transition-all duration-300 hover:scale-105">
@@ -99,10 +95,6 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Community Driven</h3>
               <p className="text-gray-600 mb-6">Join thousands of users sharing their experiences and recommendations.</p>
-              <div className="flex items-center text-orange-600 font-medium group-hover:text-orange-700">
-                <span>Learn more</span>
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </div>
             </div>
 
             <div className="group p-8 rounded-2xl bg-gradient-to-br from-cyan-50 to-blue-50 hover:from-cyan-100 hover:to-blue-100 transition-all duration-300 hover:scale-105">
@@ -111,10 +103,6 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Always Updated</h3>
               <p className="text-gray-600 mb-6">Stay current with the latest AI tools and updates in the industry.</p>
-              <div className="flex items-center text-cyan-600 font-medium group-hover:text-cyan-700">
-                <span>Learn more</span>
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </div>
             </div>
 
             <div className="group p-8 rounded-2xl bg-gradient-to-br from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100 transition-all duration-300 hover:scale-105">
@@ -123,10 +111,6 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Trusted & Secure</h3>
               <p className="text-gray-600 mb-6">All tools are verified for security and reliability before being listed.</p>
-              <div className="flex items-center text-gray-600 font-medium group-hover:text-gray-700">
-                <span>Learn more</span>
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </div>
             </div>
           </div>
         </div>
@@ -158,7 +142,8 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   )
 }
 
