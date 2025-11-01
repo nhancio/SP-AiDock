@@ -33,17 +33,17 @@ const SubmitToolPage: React.FC = () => {
     try {
       const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
       
-      // First, ensure user exists in users table
-      // Check if user already exists to avoid duplicate key errors
-      const { data: existingUser } = await supabase
+      // First, ensure user exists in users table - CRITICAL for foreign key constraint
+      // Check if user exists by ID
+      let { data: existingUser } = await supabase
         .from('users')
         .select('id')
         .eq('id', user.id)
         .maybeSingle()
 
-      // Only insert if user doesn't exist
+      // If user doesn't exist, try to create them
       if (!existingUser) {
-        const { error: userError } = await supabase
+        const { error: insertError } = await supabase
           .from('users')
           .insert({
             id: user.id,
@@ -52,23 +52,65 @@ const SubmitToolPage: React.FC = () => {
             avatar_url: user.user_metadata?.avatar_url || null,
           })
 
-        // If it's a duplicate key error (email already exists), user already exists - continue with tool submission
-        // PostgreSQL error code 23505 is for unique constraint violations
-        if (userError) {
-          const isDuplicateError = userError.message?.includes('duplicate key') || 
-                                  userError.code === '23505' ||
-                                  userError.message?.includes('users_email_key')
+        if (insertError) {
+          const isDuplicateError = insertError.message?.includes('duplicate key') || 
+                                  insertError.code === '23505' ||
+                                  insertError.message?.includes('users_email_key')
           
-          if (!isDuplicateError) {
-            // Different error, log and throw
-            console.error('Error creating user:', userError)
-            throw userError
+          if (isDuplicateError) {
+            // Duplicate email - user might exist with different ID or there was a race condition
+            // Try to find user by email to check what happened
+            const { data: userByEmail } = await supabase
+              .from('users')
+              .select('id')
+              .eq('email', user.email!)
+              .maybeSingle()
+            
+            if (userByEmail && userByEmail.id === user.id) {
+              // User exists with correct ID - race condition, we're good
+              existingUser = userByEmail
+            } else if (userByEmail && userByEmail.id !== user.id) {
+              // User exists with different ID - data inconsistency, throw error
+              throw new Error('User account mismatch. Please contact support.')
+            } else {
+              // Email conflict but user not found - try once more to verify
+              const { data: retryUser } = await supabase
+                .from('users')
+                .select('id')
+                .eq('id', user.id)
+                .maybeSingle()
+              
+              if (!retryUser) {
+                throw new Error('Failed to create user account. Please try signing in again.')
+              }
+              existingUser = retryUser
+            }
+          } else {
+            // Different error, throw it
+            console.error('Error creating user:', insertError)
+            throw insertError
           }
-          // If duplicate error, user already exists - continue with submission
+        } else {
+          // User created successfully, verify it exists
+          const { data: createdUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('id', user.id)
+            .maybeSingle()
+          
+          if (!createdUser) {
+            throw new Error('User creation succeeded but user not found. Please try again.')
+          }
+          existingUser = createdUser
         }
       }
       
-      // Optionally update user info (name, avatar) if user exists - don't throw if this fails
+      // Final verification: user MUST exist before tool submission
+      if (!existingUser) {
+        throw new Error('User does not exist in database. Please try signing in again.')
+      }
+      
+      // Update user info (name, avatar) - don't throw if this fails
       await supabase
         .from('users')
         .update({
@@ -470,3 +512,4 @@ const SubmitToolPage: React.FC = () => {
 }
 
 export default SubmitToolPage
+
