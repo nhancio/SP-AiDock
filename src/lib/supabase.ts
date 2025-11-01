@@ -10,7 +10,10 @@ export const supabase = createClient(envConfig.supabaseUrl, envConfig.supabaseAn
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    flowType: 'pkce',
+    storage: window.localStorage,
+    storageKey: 'magicbox-auth-token'
   }
 })
 
