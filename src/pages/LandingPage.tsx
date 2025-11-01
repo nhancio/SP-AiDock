@@ -12,7 +12,7 @@ const LandingPage: React.FC = () => {
         title="MagicBox - Discover the Best AI Tools for Your Needs"
         description="Explore thousands of AI tools across all categories. Find the perfect AI solution for writing, coding, design, marketing, and more. Browse, compare, and discover innovative AI tools."
         keywords="AI tools, artificial intelligence, machine learning, automation, productivity, writing tools, coding tools, design tools, marketing tools"
-        url="https://magicboxapp.netlify.app"
+        url="https://magicboxai.in"
       />
       <div className="min-h-screen bg-white">
       {/* First Page - Hero + Search Combined */}

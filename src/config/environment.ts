@@ -9,7 +9,7 @@ export const getEnvironmentConfig = () => {
   // Define redirect URLs based on environment
   const redirectUrls = {
     development: 'http://localhost:5173/auth/callback',
-    production: `${currentOrigin}/auth/callback`
+    production: 'https://magicboxai.in/auth/callback'
   }
   
   // Get the appropriate redirect URL

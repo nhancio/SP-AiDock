@@ -73,19 +73,19 @@ The following files are already configured:
    - Go to your Supabase dashboard
    - Navigate to Authentication → URL Configuration
    - Add your Netlify domain to:
-     - Site URL: `https://your-site-name.netlify.app`
-     - Redirect URLs: `https://your-site-name.netlify.app/**`
+     - Site URL: `https://magicboxai.in`
+     - Redirect URLs: `https://magicboxai.in/**`
 
 2. **Update Google OAuth (if using):**
    - Go to Google Cloud Console
    - Update OAuth redirect URIs to include:
      ```
-     https://your-site-name.netlify.app/auth/callback
+     https://magicboxai.in/auth/callback
      ```
 
 ## Step 5: Test Your Deployment
 
-1. **Visit your site:** `https://your-site-name.netlify.app`
+1. **Visit your site:** `https://magicboxai.in`
 2. **Test key features:**
    - User registration/login
    - Tool submission
