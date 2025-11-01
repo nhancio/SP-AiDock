@@ -41,10 +41,10 @@ const HomePage: React.FC = () => {
       try {
         // Fetch all data in parallel for better performance
         const [
-          { data: featured, error: featuredError },
-          { data: recent, error: recentError },
-          { data: trending, error: trendingError },
-          { data: cats, error: catsError }
+          { data: featured },
+          { data: recent },
+          { data: trending },
+          { data: cats }
         ] = await Promise.all([
           // Featured tools (most saved)
           supabase
