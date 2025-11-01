@@ -34,19 +34,48 @@ const SubmitToolPage: React.FC = () => {
       const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
       
       // First, ensure user exists in users table
-      const { error: userError } = await supabase
+      // Check if user already exists to avoid duplicate key errors
+      const { data: existingUser } = await supabase
         .from('users')
-        .upsert({
-          id: user.id,
-          email: user.email!,
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      // Only insert if user doesn't exist
+      if (!existingUser) {
+        const { error: userError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            email: user.email!,
+            name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+            avatar_url: user.user_metadata?.avatar_url || null,
+          })
+
+        // If it's a duplicate key error (email already exists), user already exists - continue with tool submission
+        // PostgreSQL error code 23505 is for unique constraint violations
+        if (userError) {
+          const isDuplicateError = userError.message?.includes('duplicate key') || 
+                                  userError.code === '23505' ||
+                                  userError.message?.includes('users_email_key')
+          
+          if (!isDuplicateError) {
+            // Different error, log and throw
+            console.error('Error creating user:', userError)
+            throw userError
+          }
+          // If duplicate error, user already exists - continue with submission
+        }
+      }
+      
+      // Optionally update user info (name, avatar) if user exists - don't throw if this fails
+      await supabase
+        .from('users')
+        .update({
           name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
           avatar_url: user.user_metadata?.avatar_url || null,
-        }, { onConflict: 'id' })
-
-      if (userError) {
-        console.error('Error creating/updating user:', userError)
-        throw userError
-      }
+        })
+        .eq('id', user.id)
 
       // Handle logo upload if provided
       let logoUrl = null

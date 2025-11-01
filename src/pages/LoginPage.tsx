@@ -10,6 +10,20 @@ const LoginPage: React.FC = () => {
   const { signIn, signInWithGoogle } = useAuth()
   const navigate = useNavigate()
 
+  // Store the referrer page when component mounts (only if not already stored)
+  React.useEffect(() => {
+    const currentPath = window.location.pathname + window.location.search
+    // Only store if not already stored and not on login/auth callback pages
+    if (!localStorage.getItem('authRedirectTo')) {
+      if (!currentPath.startsWith('/login') && !currentPath.startsWith('/auth/callback')) {
+        localStorage.setItem('authRedirectTo', currentPath)
+      } else {
+        // Default to home if navigating directly to login
+        localStorage.setItem('authRedirectTo', '/')
+      }
+    }
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -20,7 +34,9 @@ const LoginPage: React.FC = () => {
         toast.error(error.message)
       } else {
         toast.success('Successfully signed in!')
-        navigate('/')
+        const redirectTo = localStorage.getItem('authRedirectTo') || '/'
+        localStorage.removeItem('authRedirectTo')
+        navigate(redirectTo)
       }
     } catch (error) {
       toast.error('An unexpected error occurred')
@@ -35,10 +51,12 @@ const LoginPage: React.FC = () => {
       const { error } = await signInWithGoogle()
       if (error) {
         toast.error(error.message)
+        setLoading(false)
       }
+      // For OAuth, the redirect happens automatically, so don't set loading to false
+      // The AuthCallback component will handle the redirect
     } catch (error) {
       toast.error('An unexpected error occurred')
-    } finally {
       setLoading(false)
     }
   }

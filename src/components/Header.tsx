@@ -95,7 +95,14 @@ const Header: React.FC = () => {
                 </Link>
               ) : (
                 <button
-                  onClick={() => signInWithGoogle()}
+                  onClick={() => {
+                    // Store current page before sign-in
+                    const currentPath = window.location.pathname + window.location.search
+                    if (currentPath !== '/login' && currentPath !== '/auth/callback') {
+                      localStorage.setItem('authRedirectTo', currentPath)
+                    }
+                    signInWithGoogle()
+                  }}
                   className="flex items-center space-x-2 px-6 py-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 text-sm font-medium"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -196,6 +203,11 @@ const Header: React.FC = () => {
                 ) : (
                   <button
                     onClick={() => {
+                      // Store current page before sign-in
+                      const currentPath = window.location.pathname + window.location.search
+                      if (currentPath !== '/login' && currentPath !== '/auth/callback') {
+                        localStorage.setItem('authRedirectTo', currentPath)
+                      }
                       signInWithGoogle()
                       setIsMenuOpen(false)
                     }}
