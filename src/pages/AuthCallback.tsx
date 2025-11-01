@@ -15,7 +15,7 @@ const AuthCallback: React.FC = () => {
     
     // Store cleanup refs
     let subscription: { data: { subscription: { unsubscribe: () => void } } } | null = null
-    let timeoutId: NodeJS.Timeout | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
     
     const handleAuthCallback = async () => {
       try {
