@@ -1,30 +1,98 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 const AuthCallback: React.FC = () => {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading')
+  const [errorMessage, setErrorMessage] = useState<string>('')
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Wait for Supabase to process the hash fragment
-        // Supabase automatically processes hash fragments with detectSessionInUrl: true
-        await new Promise(resolve => setTimeout(resolve, 500))
-        
-        // Get the session - Supabase will automatically extract tokens from URL hash
-        const { data, error } = await supabase.auth.getSession()
+        // Check if we have a code in the URL (PKCE flow)
+        const code = searchParams.get('code')
+        const error = searchParams.get('error')
         
         if (error) {
-          console.error('Auth callback error:', error)
+          console.error('OAuth error:', error)
+          setErrorMessage(`Authentication error: ${error}`)
           setStatus('error')
           setTimeout(() => {
-            navigate('/login?error=auth_callback_failed')
-          }, 2000)
+            navigate('/login?error=' + encodeURIComponent(error))
+          }, 3000)
           return
         }
 
+        // Wait for Supabase to process the code/tokens
+        // With PKCE, Supabase automatically exchanges the code for tokens
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+              try {
+                // Check if user profile exists, create if not
+                const { error: profileError } = await supabase
+                  .from('users')
+                  .select('*')
+                  .eq('id', session.user.id)
+                  .single()
+
+                if (profileError && profileError.code === 'PGRST116') {
+                  // Profile doesn't exist, create it
+                  const { error: insertError } = await supabase
+                    .from('users')
+                    .insert({
+                      id: session.user.id,
+                      email: session.user.email!,
+                      name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+                      avatar_url: session.user.user_metadata?.avatar_url || null,
+                    })
+
+                  if (insertError) {
+                    console.error('Error creating user profile:', insertError)
+                  }
+                }
+
+                setStatus('success')
+                // Clear the URL parameters
+                window.history.replaceState(null, '', '/auth/callback')
+                setTimeout(() => {
+                  navigate('/')
+                }, 500)
+              } catch (err) {
+                console.error('Profile creation error:', err)
+                setStatus('error')
+                setErrorMessage('Failed to create user profile')
+              }
+            } else if (event === 'SIGNED_OUT') {
+              setStatus('error')
+              setErrorMessage('Authentication failed')
+              setTimeout(() => {
+                navigate('/login?error=sign_out')
+              }, 2000)
+            }
+          }
+        )
+        
+        // Get the current session
+        const { data, error: sessionError } = await supabase.auth.getSession()
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError)
+          setStatus('error')
+          setErrorMessage(sessionError.message || 'Failed to get session')
+          subscription.unsubscribe()
+          setTimeout(() => {
+            navigate('/login?error=auth_callback_failed')
+          }, 3000)
+          return
+        }
+
+        // If we already have a session, handle it
         if (data?.session) {
           // Check if user profile exists, create if not
           const { error: profileError } = await supabase
@@ -50,30 +118,51 @@ const AuthCallback: React.FC = () => {
           }
 
           setStatus('success')
-          // Redirect to home page after successful authentication
+          subscription.unsubscribe()
+          // Clear the URL parameters
+          window.history.replaceState(null, '', '/auth/callback')
           setTimeout(() => {
-            // Clear the hash from URL before redirecting
-            window.history.replaceState(null, '', '/auth/callback')
             navigate('/')
           }, 500)
-        } else {
-          // No session found, redirect to login
-          setStatus('error')
+        } else if (code) {
+          // We have a code but no session yet - wait for auth state change
+          // The subscription above will handle it
+          console.log('Waiting for session from code exchange...')
+          // Set a timeout in case something goes wrong
           setTimeout(() => {
-            navigate('/login?error=no_session')
+            subscription.unsubscribe()
+            setStatus('error')
+            setErrorMessage('Authentication timeout. Please try again.')
+            setTimeout(() => {
+              navigate('/login?error=timeout')
+            }, 3000)
+          }, 10000)
+        } else {
+          // No code and no session
+          subscription.unsubscribe()
+          setStatus('error')
+          setErrorMessage('No authentication code found')
+          setTimeout(() => {
+            navigate('/login?error=no_code')
           }, 2000)
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Auth callback error:', error)
         setStatus('error')
+        setErrorMessage(error?.message || 'An unexpected error occurred')
         setTimeout(() => {
           navigate('/login?error=auth_callback_failed')
-        }, 2000)
+        }, 3000)
       }
     }
 
     handleAuthCallback()
-  }, [navigate])
+    
+    // Cleanup function to unsubscribe if component unmounts
+    return () => {
+      // Cleanup will be handled in the callback function
+    }
+  }, [navigate, searchParams])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
@@ -91,7 +180,11 @@ const AuthCallback: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <p className="text-gray-600">Authentication failed. Redirecting...</p>
+            <p className="text-gray-600 mb-2">Authentication failed</p>
+            {errorMessage && (
+              <p className="text-sm text-gray-500 mb-4 max-w-md mx-auto">{errorMessage}</p>
+            )}
+            <p className="text-gray-400 text-sm">Redirecting...</p>
           </>
         )}
         {status === 'success' && (
