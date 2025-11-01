@@ -36,7 +36,7 @@ const PrivacyPolicy: React.FC = () => {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-blue-700">
-                  <strong>Nhancio Technologies Private Limited</strong> ("we," "our," or "us") operates the AiDock platform. 
+                  <strong>Nhancio Technologies Private Limited</strong> ("we," "our," or "us") operates the MagicBox platform. 
                   This Privacy Policy explains how we collect, use, and protect your information when you use our service.
                 </p>
               </div>

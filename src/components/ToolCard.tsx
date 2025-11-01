@@ -134,7 +134,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
       {/* Clickable card content */}
       <Link 
         to={generateToolUrl(tool.name)}
-        className="block p-4 sm:p-6 hover:bg-gray-50 transition-colors duration-200"
+        className="block p-4 sm:p-6 hover:bg-gray-50 active:bg-gray-100 transition-colors duration-200 touch-manipulation"
       >
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -203,20 +203,20 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onLike }) => {
       </Link>
 
       {/* Floating buttons - positioned absolutely to avoid interfering with card click */}
-      <div className="absolute top-4 right-4 flex flex-col space-y-2">
+      <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex flex-col space-y-2">
         <button
           onClick={handleLike}
-          className={`p-2 rounded-lg transition-all duration-200 ${
+          className={`min-w-[44px] min-h-[44px] p-2 rounded-lg transition-all duration-200 touch-manipulation ${
             isLiked
               ? 'text-blue-500 bg-blue-50 shadow-md'
-              : 'text-gray-400 hover:text-blue-500 hover:bg-blue-50 hover:shadow-md'
+              : 'text-gray-400 active:text-blue-500 active:bg-blue-50 active:shadow-md'
           }`}
         >
           <Bookmark className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
         </button>
         <button
           onClick={handleExternalClick}
-          className="text-gray-500 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-100"
+          className="min-w-[44px] min-h-[44px] text-gray-500 active:text-blue-600 transition-colors p-2 rounded-lg active:bg-gray-100 touch-manipulation"
         >
           <ExternalLink className="w-5 h-5" />
         </button>

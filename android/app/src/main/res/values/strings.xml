@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AiDock</string>
+    <string name="title_activity_main">AiDock</string>
+    <string name="package_name">com.nhancio.aidock</string>
+    <string name="custom_url_scheme">com.nhancio.aidock</string>
+</resources>

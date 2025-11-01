@@ -23,10 +23,22 @@ const Header: React.FC = () => {
           <div className="flex justify-between items-center">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-200">
-                <span className="text-white font-bold text-lg">AI</span>
+              <img 
+                src="/magicbox.png" 
+                alt="MagicBox" 
+                className="w-10 h-10 rounded-xl object-contain shadow-lg group-hover:scale-105 transition-transform duration-200"
+                onError={(e) => {
+                  // Fallback if logo doesn't load
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  const fallback = target.nextElementSibling as HTMLElement
+                  if (fallback) fallback.style.display = 'flex'
+                }}
+              />
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl hidden items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-200">
+                <span className="text-white font-bold text-lg">MB</span>
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">AiDock</span>
+              <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">MagicBox</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -113,7 +125,7 @@ const Header: React.FC = () => {
             <div className="md:hidden flex items-center space-x-2">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-white/60 rounded-full transition-all duration-200"
+                className="min-w-[44px] min-h-[44px] p-2 text-gray-500 active:text-gray-700 active:bg-white/60 rounded-full transition-all duration-200 touch-manipulation"
               >
                 {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -126,7 +138,7 @@ const Header: React.FC = () => {
             <nav className="flex flex-col space-y-2">
               <Link 
                 to="/" 
-                className="px-4 py-3 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 font-medium text-sm"
+                className="min-h-[44px] px-4 py-3 rounded-full text-gray-700 active:text-gray-900 active:bg-white/60 transition-all duration-200 font-medium text-sm touch-manipulation flex items-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
@@ -150,7 +162,7 @@ const Header: React.FC = () => {
                   handleCommunityClick(e)
                   setIsMenuOpen(false)
                 }}
-                className="text-left px-4 py-3 rounded-full text-gray-700 hover:text-gray-900 hover:bg-white/60 transition-all duration-200 text-sm"
+                className="min-h-[44px] text-left px-4 py-3 rounded-full text-gray-700 active:text-gray-900 active:bg-white/60 transition-all duration-200 text-sm touch-manipulation"
               >
                 Community
               </button>

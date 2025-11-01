@@ -10,11 +10,11 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({
-  title = 'AiDock - Discover the Best AI Tools',
+  title = 'MagicBox - Discover the Best AI Tools',
   description = 'Discover and explore the best AI tools for your needs. Browse, compare, and find the perfect AI solution for your projects.',
   keywords = 'AI tools, artificial intelligence, machine learning, automation, productivity tools',
-  image = '/og-image.jpg',
-  url = 'https://aidockapp.netlify.app',
+  image = '/magicbox.png',
+  url = 'https://magicboxapp.netlify.app',
   type = 'website'
 }) => {
   useEffect(() => {
@@ -57,7 +57,7 @@ const SEO: React.FC<SEOProps> = ({
     updateMetaTag('og:title', title, true)
     updateMetaTag('og:description', description, true)
     updateMetaTag('og:image', image, true)
-    updateMetaTag('og:site_name', 'AiDock', true)
+    updateMetaTag('og:site_name', 'MagicBox', true)
     
     // Twitter
     updateMetaTag('twitter:card', 'summary_large_image', true)

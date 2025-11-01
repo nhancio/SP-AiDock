@@ -36,7 +36,7 @@ const TermsConditions: React.FC = () => {
               </div>
               <div className="ml-3">
                 <p className="text-sm text-blue-700">
-                  <strong>Nhancio Technologies Private Limited</strong> ("Company," "we," "our," or "us") provides the AiDock platform. 
+                  <strong>Nhancio Technologies Private Limited</strong> ("Company," "we," "our," or "us") provides the MagicBox platform. 
                   By using our service, you agree to be bound by these Terms and Conditions.
                 </p>
               </div>
@@ -46,7 +46,7 @@ const TermsConditions: React.FC = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
             <p className="text-gray-700 mb-4">
-              By accessing and using AiDock, you accept and agree to be bound by the terms and provision of this agreement. 
+              By accessing and using MagicBox, you accept and agree to be bound by the terms and provision of this agreement. 
               If you do not agree to abide by the above, please do not use this service.
             </p>
           </section>
@@ -54,7 +54,7 @@ const TermsConditions: React.FC = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Description of Service</h2>
             <p className="text-gray-700 mb-4">
-              AiDock is a platform that allows users to discover, browse, and save AI tools. Our service includes:
+              MagicBox is a platform that allows users to discover, browse, and save AI tools. Our service includes:
             </p>
             <ul className="list-disc pl-6 mb-4 text-gray-700">
               <li>Tool discovery and browsing</li>

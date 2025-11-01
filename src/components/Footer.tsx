@@ -10,10 +10,12 @@ const Footer: React.FC = () => {
           {/* Brand */}
           <div>
             <Link to="/" className="flex items-center space-x-2 mb-3">
-              <div className="w-6 h-6 bg-primary-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">AI</span>
-              </div>
-              <span className="text-lg font-bold">AiDock</span>
+              <img 
+                src="/magicbox.png" 
+                alt="MagicBox" 
+                className="w-6 h-6 rounded-lg object-contain"
+              />
+              <span className="text-lg font-bold">MagicBox</span>
             </Link>
             <p className="text-gray-400 mb-4 text-sm max-w-xs">
               Discover the best AI tools for your needs.

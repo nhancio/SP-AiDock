@@ -9,10 +9,10 @@ const LandingPage: React.FC = () => {
   return (
     <>
       <SEO 
-        title="AiDock - Discover the Best AI Tools for Your Needs"
+        title="MagicBox - Discover the Best AI Tools for Your Needs"
         description="Explore thousands of AI tools across all categories. Find the perfect AI solution for writing, coding, design, marketing, and more. Browse, compare, and discover innovative AI tools."
         keywords="AI tools, artificial intelligence, machine learning, automation, productivity, writing tools, coding tools, design tools, marketing tools"
-        url="https://aidockapp.netlify.app"
+        url="https://magicboxapp.netlify.app"
       />
       <div className="min-h-screen bg-white">
       {/* First Page - Hero + Search Combined */}
@@ -57,7 +57,7 @@ const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Choose AiDock?
+              Why Choose MagicBox?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               We make it easy to discover, compare, and choose the perfect AI tools for your needs

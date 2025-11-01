@@ -61,9 +61,9 @@ const ProfilePage: React.FC = () => {
 📂 *Category:* ${categoryDisplay}
 🔗 *Link:* ${toolUrl}
 
-Check out this amazing AI tool I found on AiDock! It might be useful for your projects.
+Check out this amazing AI tool I found on MagicBox! It might be useful for your projects.
 
-#AITools #${categoryDisplay.replace(' ', '')} #AiDock`
+#AITools #${categoryDisplay.replace(' ', '')} #MagicBox`
 
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')
