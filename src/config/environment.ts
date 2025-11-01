@@ -13,7 +13,9 @@ export const getEnvironmentConfig = () => {
   }
   
   // Get the appropriate redirect URL
-  const redirectUrl = isDevelopment 
+  // Force production URL if we're on the production domain (even if detected as dev)
+  const isProductionDomain = currentOrigin.includes('magicboxai.in') || currentOrigin.includes('www.magicboxai.in')
+  const redirectUrl = (isDevelopment && !isProductionDomain)
     ? redirectUrls.development 
     : redirectUrls.production
   
