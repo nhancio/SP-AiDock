@@ -10,7 +10,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  base: './',
+  base: '/', // Use absolute paths for production deployment
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

@@ -8,69 +8,94 @@ const AuthCallback: React.FC = () => {
   const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading')
   const [errorMessage, setErrorMessage] = useState<string>('')
 
+  // Log component mount
+  React.useEffect(() => {
+    console.log('AuthCallback component mounted')
+    return () => {
+      console.log('AuthCallback component unmounting')
+    }
+  }, [])
+
   useEffect(() => {
-    // Check for OAuth error in URL
-    const error = searchParams.get('error')
-    const errorDescription = searchParams.get('error_description')
-    
-    // Store cleanup refs
+    let mounted = true
     let subscription: { data: { subscription: { unsubscribe: () => void } } } | null = null
     let timeoutId: ReturnType<typeof setTimeout> | null = null
     
+    const ensureUserProfile = async (userId: string, email: string, metadata: any) => {
+      try {
+        const { error: profileError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', userId)
+          .single()
+
+        if (profileError && profileError.code === 'PGRST116') {
+          // Profile doesn't exist, create it
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert({
+              id: userId,
+              email,
+              name: metadata?.full_name || 
+                    metadata?.name || 
+                    email.split('@')[0] || 
+                    'User',
+              avatar_url: metadata?.avatar_url || null,
+            })
+
+          if (insertError) {
+            console.error('Error creating user profile:', insertError)
+            throw insertError
+          }
+        }
+      } catch (err) {
+        console.error('Profile creation error:', err)
+        throw err
+      }
+    }
+
     const handleAuthCallback = async () => {
       try {
+        // Check for OAuth error in URL
+        const error = searchParams.get('error')
+        const errorDescription = searchParams.get('error_description')
+        
         if (error) {
           console.error('OAuth error:', error, errorDescription)
-          setErrorMessage(errorDescription || `Authentication error: ${error}`)
-          setStatus('error')
-          setTimeout(() => {
-            navigate('/login?error=' + encodeURIComponent(error))
-          }, 3000)
+          if (mounted) {
+            setErrorMessage(errorDescription || `Authentication error: ${error}`)
+            setStatus('error')
+            setTimeout(() => {
+              navigate('/login?error=' + encodeURIComponent(error), { replace: true })
+            }, 3000)
+          }
           return
         }
 
-        // With PKCE flow and detectSessionInUrl: true, Supabase automatically
-        // processes the code from the URL and exchanges it for tokens
-        // We just need to wait for the session to be established
-        
-        // Set up auth state listener
+        const code = searchParams.get('code')
+        console.log('Auth callback - Code present:', !!code)
+
+        // Set up auth state listener BEFORE checking session
         subscription = supabase.auth.onAuthStateChange(
           async (event, session) => {
             console.log('Auth state change:', event, session ? 'Session exists' : 'No session')
             
+            if (!mounted) return
+            
             if (event === 'SIGNED_IN' && session) {
               try {
-                // Clear any timeouts
+                // Clear timeout
                 if (timeoutId) {
                   clearTimeout(timeoutId)
                   timeoutId = null
                 }
                 
                 // Ensure user profile exists
-                const { error: profileError } = await supabase
-                  .from('users')
-                  .select('id')
-                  .eq('id', session.user.id)
-                  .single()
-
-                if (profileError && profileError.code === 'PGRST116') {
-                  // Profile doesn't exist, create it
-                  const { error: insertError } = await supabase
-                    .from('users')
-                    .insert({
-                      id: session.user.id,
-                      email: session.user.email!,
-                      name: session.user.user_metadata?.full_name || 
-                            session.user.user_metadata?.name || 
-                            session.user.email?.split('@')[0] || 
-                            'User',
-                      avatar_url: session.user.user_metadata?.avatar_url || null,
-                    })
-
-                  if (insertError) {
-                    console.error('Error creating user profile:', insertError)
-                  }
-                }
+                await ensureUserProfile(
+                  session.user.id,
+                  session.user.email!,
+                  session.user.user_metadata
+                )
 
                 // Clean up subscription
                 if (subscription) {
@@ -78,127 +103,144 @@ const AuthCallback: React.FC = () => {
                   subscription = null
                 }
                 
-                setStatus('success')
-                // Clear URL parameters
-                window.history.replaceState(null, '', '/auth/callback')
-                
-                // Redirect to home after a brief delay
-                setTimeout(() => {
-                  navigate('/', { replace: true })
-                }, 500)
+                if (mounted) {
+                  setStatus('success')
+                  // Clear URL parameters
+                  window.history.replaceState(null, '', '/auth/callback')
+                  
+                  // Redirect to home
+                  setTimeout(() => {
+                    navigate('/', { replace: true })
+                  }, 500)
+                }
               } catch (err) {
-                console.error('Profile creation error:', err)
+                console.error('Error in SIGNED_IN handler:', err)
+                if (mounted) {
+                  if (subscription) {
+                    subscription.data.subscription.unsubscribe()
+                    subscription = null
+                  }
+                  setStatus('error')
+                  setErrorMessage('Failed to complete authentication')
+                  setTimeout(() => {
+                    navigate('/login?error=profile_error', { replace: true })
+                  }, 3000)
+                }
+              }
+            } else if (event === 'TOKEN_REFRESHED' && session) {
+              // Token was refreshed, user is still signed in
+              console.log('Token refreshed')
+            } else if (event === 'SIGNED_OUT') {
+              if (mounted) {
                 if (subscription) {
                   subscription.data.subscription.unsubscribe()
                   subscription = null
                 }
                 setStatus('error')
-                setErrorMessage('Failed to create user profile')
+                setErrorMessage('Authentication failed')
                 setTimeout(() => {
-                  navigate('/login?error=profile_error')
-                }, 3000)
+                  navigate('/login?error=sign_out', { replace: true })
+                }, 2000)
               }
-            } else if (event === 'SIGNED_OUT') {
+            }
+          }
+        )
+        
+        // Check if we already have a session (might happen if code was already exchanged)
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError)
+        }
+        
+        if (sessionData?.session) {
+          // We already have a session - handle it immediately
+          console.log('Session already exists')
+          try {
+            await ensureUserProfile(
+              sessionData.session.user.id,
+              sessionData.session.user.email!,
+              sessionData.session.user.user_metadata
+            )
+            
+            if (subscription) {
+              subscription.data.subscription.unsubscribe()
+              subscription = null
+            }
+            
+            if (mounted) {
+              setStatus('success')
+              window.history.replaceState(null, '', '/auth/callback')
+              setTimeout(() => {
+                navigate('/', { replace: true })
+              }, 500)
+            }
+          } catch (err) {
+            console.error('Error handling existing session:', err)
+            if (mounted) {
               if (subscription) {
                 subscription.data.subscription.unsubscribe()
                 subscription = null
               }
               setStatus('error')
-              setErrorMessage('Authentication failed')
+              setErrorMessage('Failed to process session')
               setTimeout(() => {
-                navigate('/login?error=sign_out')
-              }, 2000)
+                navigate('/login?error=session_error', { replace: true })
+              }, 3000)
             }
           }
-        )
-        
-        // Also try to get session directly (in case the event already fired)
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError)
-          // Don't fail immediately - wait for auth state change
-        }
-        
-        if (sessionData?.session) {
-          // We already have a session, handle it
-          try {
-            // Ensure user profile exists
-            const { error: profileError } = await supabase
-              .from('users')
-              .select('id')
-              .eq('id', sessionData.session.user.id)
-              .single()
-
-            if (profileError && profileError.code === 'PGRST116') {
-              const { error: insertError } = await supabase
-                .from('users')
-                .insert({
-                  id: sessionData.session.user.id,
-                  email: sessionData.session.user.email!,
-                  name: sessionData.session.user.user_metadata?.full_name || 
-                        sessionData.session.user.user_metadata?.name || 
-                        sessionData.session.user.email?.split('@')[0] || 
-                        'User',
-                  avatar_url: sessionData.session.user.user_metadata?.avatar_url || null,
-                })
-
-              if (insertError) {
-                console.error('Error creating user profile:', insertError)
-              }
-            }
-            
-            // Clean up subscription
-            if (subscription) {
-              subscription.data.subscription.unsubscribe()
-              subscription = null
-            }
-            
-            setStatus('success')
-            window.history.replaceState(null, '', '/auth/callback')
-            setTimeout(() => {
-              navigate('/', { replace: true })
-            }, 500)
-          } catch (err) {
-            console.error('Error handling session:', err)
-            if (subscription) {
-              subscription.data.subscription.unsubscribe()
-              subscription = null
-            }
-            setStatus('error')
-            setErrorMessage('Failed to process session')
-            setTimeout(() => {
-              navigate('/login?error=session_error')
-            }, 3000)
-          }
-        } else {
-          // No session yet - set timeout to wait for auth state change
+        } else if (code) {
+          // We have a code but no session - wait for auth state change
+          // With detectSessionInUrl: true, Supabase will automatically exchange the code
+          console.log('Code present, waiting for session...')
+          
+          // Set timeout as fallback
           timeoutId = setTimeout(() => {
+            if (mounted) {
+              console.error('Authentication timeout')
+              if (subscription) {
+                subscription.data.subscription.unsubscribe()
+                subscription = null
+              }
+              setStatus('error')
+              setErrorMessage('Authentication timeout. Please try signing in again.')
+              setTimeout(() => {
+                navigate('/login?error=timeout', { replace: true })
+              }, 3000)
+            }
+          }, 15000) // 15 second timeout
+        } else {
+          // No code and no session - invalid state
+          console.error('No code or session found')
+          if (mounted) {
             if (subscription) {
               subscription.data.subscription.unsubscribe()
               subscription = null
             }
             setStatus('error')
-            setErrorMessage('Authentication timeout. Please try signing in again.')
+            setErrorMessage('No authentication code found')
             setTimeout(() => {
-              navigate('/login?error=timeout')
-            }, 3000)
-          }, 10000) // 10 second timeout
+              navigate('/login?error=no_code', { replace: true })
+            }, 2000)
+          }
         }
       } catch (error: any) {
         console.error('Auth callback error:', error)
-        setStatus('error')
-        setErrorMessage(error?.message || 'An unexpected error occurred')
-        setTimeout(() => {
-          navigate('/login?error=auth_callback_failed')
-        }, 3000)
+        if (mounted) {
+          setStatus('error')
+          setErrorMessage(error?.message || 'An unexpected error occurred')
+          setTimeout(() => {
+            navigate('/login?error=auth_callback_failed', { replace: true })
+          }, 3000)
+        }
       }
     }
 
     handleAuthCallback()
     
-    // Cleanup function for useEffect
+    // Cleanup function
     return () => {
+      mounted = false
       if (timeoutId) {
         clearTimeout(timeoutId)
       }
